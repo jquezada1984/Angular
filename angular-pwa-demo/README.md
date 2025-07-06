@@ -300,5 +300,5 @@ Este proyecto está bajo la Licencia MIT - ver el archivo [LICENSE.md](LICENSE.m
 
 ## 👨‍💻 Autor
 
-**John Quezada** - [@tu-usuario](https://github.com/jquezada1984)
+**John Quezada** - [@jquezada1984](https://github.com/jquezada1984)
 
