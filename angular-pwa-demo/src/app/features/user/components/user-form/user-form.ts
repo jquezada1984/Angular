@@ -168,8 +168,8 @@ export class UserFormComponent implements OnInit, OnChanges {
                   this.closeForm();
                 },
                 error: (photoErr) => {
-                  console.error('Error al actualizar foto:', photoErr);
-                  // Guardar usuario sin foto si falla la actualización de foto
+                  const msg = photoErr?.error || 'Error al actualizar la foto del usuario';
+                  alert(msg);
                   this.save.emit(updatedUser);
                   this.isSubmitting = false;
                   this.closeForm();
@@ -182,7 +182,8 @@ export class UserFormComponent implements OnInit, OnChanges {
             }
           },
           error: (err) => {
-            alert('Error al actualizar el usuario');
+            const msg = err?.error || 'Error al actualizar el usuario';
+            alert(msg);
             this.isSubmitting = false;
           }
         });
@@ -195,7 +196,8 @@ export class UserFormComponent implements OnInit, OnChanges {
             this.closeForm();
           },
           error: (err) => {
-            alert('Error al crear el usuario');
+            const msg = err?.error || 'Error al crear el usuario';
+            alert(msg);
             this.isSubmitting = false;
           }
         });
