@@ -1,4 +1,4 @@
-import { Component, OnInit, OnChanges, Input, Output, EventEmitter, SimpleChanges } from '@angular/core';
+import { Component, OnInit, OnChanges, Input, Output, EventEmitter, SimpleChanges, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 
@@ -9,6 +9,7 @@ export interface User {
   age: number;
   phone: string;
   city: string;
+  photo?: string;
 }
 
 @Component({
@@ -24,14 +25,25 @@ export class UserFormComponent implements OnInit, OnChanges {
   @Output() save = new EventEmitter<User>();
   @Output() close = new EventEmitter<void>();
 
+  @ViewChild('video') videoRef!: ElementRef<HTMLVideoElement>;
+  @ViewChild('canvas') canvasRef!: ElementRef<HTMLCanvasElement>;
+
   userForm!: FormGroup;
   isEditing = false;
   isSubmitting = false;
+
+  // Cámara
+  isCameraOpen = false;
+  photoDataUrl: string | null = null;
+  availableDevices: MediaDeviceInfo[] = [];
+  selectedDeviceId: string | null = null;
+  private stream: MediaStream | null = null;
 
   constructor(private fb: FormBuilder) {}
 
   ngOnInit() {
     this.initForm();
+    this.getAvailableCameras();
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -41,6 +53,7 @@ export class UserFormComponent implements OnInit, OnChanges {
         setTimeout(() => {
           if (this.userForm && this.user) {
             this.userForm.patchValue(this.user);
+            this.photoDataUrl = this.user.photo || null;
           }
         });
       } else {
@@ -48,6 +61,7 @@ export class UserFormComponent implements OnInit, OnChanges {
         if (this.userForm) {
           this.userForm.reset();
         }
+        this.photoDataUrl = null;
       }
     }
   }
@@ -58,20 +72,85 @@ export class UserFormComponent implements OnInit, OnChanges {
       email: ['', [Validators.required, Validators.email]],
       age: ['', [Validators.required, Validators.min(1), Validators.max(120)]],
       phone: ['', [Validators.required, Validators.minLength(10)]],
-      city: ['', [Validators.required, Validators.minLength(2)]]
+      city: ['', [Validators.required, Validators.minLength(2)]],
+      photo: ['']
     });
+  }
+
+  async getAvailableCameras() {
+    if (!navigator.mediaDevices?.enumerateDevices) return;
+    const devices = await navigator.mediaDevices.enumerateDevices();
+    this.availableDevices = devices.filter(d => d.kind === 'videoinput');
+    if (this.availableDevices.length > 0) {
+      this.selectedDeviceId = this.availableDevices[0].deviceId;
+    }
+  }
+
+  async openCamera() {
+    if (!navigator.mediaDevices?.getUserMedia) return;
+    try {
+      this.isCameraOpen = true;
+      this.photoDataUrl = null;
+      if (this.stream) {
+        this.stopCamera();
+      }
+      this.stream = await navigator.mediaDevices.getUserMedia({
+        video: { deviceId: this.selectedDeviceId ? { exact: this.selectedDeviceId } : undefined }
+      });
+      if (this.videoRef && this.videoRef.nativeElement) {
+        this.videoRef.nativeElement.srcObject = this.stream;
+        this.videoRef.nativeElement.play();
+      }
+    } catch (err) {
+      alert('No se pudo acceder a la cámara.');
+      this.isCameraOpen = false;
+    }
+  }
+
+  capturePhoto() {
+    if (!this.videoRef || !this.canvasRef) return;
+    const video = this.videoRef.nativeElement;
+    const canvas = this.canvasRef.nativeElement;
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    const ctx = canvas.getContext('2d');
+    if (ctx) {
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+      this.photoDataUrl = canvas.toDataURL('image/png');
+      this.userForm.patchValue({ photo: this.photoDataUrl });
+    }
+    this.stopCamera();
+  }
+
+  stopCamera() {
+    if (this.stream) {
+      this.stream.getTracks().forEach(track => track.stop());
+      this.stream = null;
+    }
+    this.isCameraOpen = false;
+  }
+
+  onDeviceChange(event: Event) {
+    const select = event.target as HTMLSelectElement;
+    this.selectedDeviceId = select.value;
+    if (this.isCameraOpen) {
+      this.openCamera();
+    }
+  }
+
+  removePhoto() {
+    this.photoDataUrl = null;
+    this.userForm.patchValue({ photo: '' });
   }
 
   onSubmit() {
     if (this.userForm.valid) {
       this.isSubmitting = true;
-      
       const userData: User = {
         id: this.user?.id || this.generateId(),
-        ...this.userForm.value
+        ...this.userForm.value,
+        photo: this.photoDataUrl || ''
       };
-
-      // Simular delay de guardado
       setTimeout(() => {
         this.save.emit(userData);
         this.isSubmitting = false;
@@ -87,6 +166,8 @@ export class UserFormComponent implements OnInit, OnChanges {
     this.userForm.reset();
     this.isEditing = false;
     this.isSubmitting = false;
+    this.photoDataUrl = null;
+    this.stopCamera();
   }
 
   private markFormGroupTouched() {

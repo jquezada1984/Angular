@@ -78,6 +78,33 @@
         </div>
       </div>
 
+      <div class="photo-section">
+        <label>Foto de usuario</label>
+        <div *ngIf="photoDataUrl; else noPhoto">
+          <img [src]="photoDataUrl" alt="Foto de usuario" class="photo-preview" />
+          <button type="button" (click)="removePhoto()">Eliminar foto</button>
+        </div>
+        <ng-template #noPhoto>
+          <button type="button" (click)="openCamera()">Tomar foto</button>
+        </ng-template>
+      </div>
+
+      <!-- Modal de cámara -->
+      <div class="camera-modal" *ngIf="isCameraOpen">
+        <div class="camera-controls">
+          <label *ngIf="availableDevices.length > 1">
+            Cámara:
+            <select (change)="onDeviceChange($event)" [value]="selectedDeviceId">
+              <option *ngFor="let device of availableDevices" [value]="device.deviceId">{{device.label || 'Cámara ' + (availableDevices.indexOf(device)+1)}}</option>
+            </select>
+          </label>
+          <button type="button" (click)="stopCamera()">Cancelar</button>
+        </div>
+        <video #video autoplay playsinline></video>
+        <button type="button" (click)="capturePhoto()">Capturar foto</button>
+        <canvas #canvas style="display:none;"></canvas>
+      </div>
+
       <div class="form-actions">
         <button type="button" class="btn btn-secondary" (click)="closeForm()">
           Cancelar
