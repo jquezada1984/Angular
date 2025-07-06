@@ -72,8 +72,7 @@ ng serve --open
 # Servidor de desarrollo con live-reload
 ng serve --poll=2000
 
-# Servidor de desarrollo con SSL (para PWA)
-ng serve --ssl
+
 ```
 
 ## 🏗️ Build y Deploy
@@ -83,21 +82,7 @@ ng serve --ssl
 ng build
 ```
 
-### Build de Producción
-```bash
-ng build --configuration production
-```
 
-### Build de Producción con Optimizaciones
-```bash
-ng build --configuration production --optimization
-```
-
-### Análisis del Bundle
-```bash
-ng build --configuration production --stats-json
-npx webpack-bundle-analyzer dist/angular-pwa-demo/stats.json
-```
 
 ## 📱 PWA
 
@@ -111,17 +96,7 @@ El archivo `ngsw-config.json` incluye:
   - Máximo: 100 entradas
   - Caducidad: 1 hora
 
-### Testing PWA
-```bash
-# Build de producción
-ng build --configuration production
 
-# Servir archivos estáticos
-npx http-server dist/angular-pwa-demo -p 8080
-
-# Verificar PWA
-npx lighthouse http://localhost:8080 --view
-```
 
 ## 🏗️ Estructura del Proyecto
 
@@ -297,36 +272,14 @@ npm i -g vercel
 vercel --prod
 ```
 
-### Firebase Hosting
-```bash
-# Instalar Firebase CLI
-npm install -g firebase-tools
 
-# Login y deploy
-firebase login
-firebase init hosting
-firebase deploy
-```
-
-## 🧪 Testing
-
-```bash
-# Ejecutar tests unitarios
-npm test
-
-# Ejecutar tests con coverage
-npm run test:coverage
-
-# Ejecutar tests e2e
-npm run e2e
-```
 
 ## 📋 Roadmap
 
 ### Próximas Funcionalidades
 - [ ] **Autenticación** con JWT
-- [ ] **Backend API** con Node.js/Express
-- [ ] **Base de datos** MongoDB/PostgreSQL
+- [ ] **Backend API** C#
+- [ ] **Base de datos** SQL Server
 - [ ] **Filtros y búsqueda** en listas
 - [ ] **Exportación** a PDF/Excel
 - [ ] **Notificaciones push** para PWA
@@ -347,10 +300,5 @@ Este proyecto está bajo la Licencia MIT - ver el archivo [LICENSE.md](LICENSE.m
 
 ## 👨‍💻 Autor
 
-**Tu Nombre** - [@tu-usuario](https://github.com/tu-usuario)
+**John Quezada** - [@tu-usuario](https://github.com/jquezada1984)
 
-## 🙏 Agradecimientos
-
-- Angular Team por el framework
-- Angular CLI por las herramientas de desarrollo
-- Comunidad Angular por el soporte
