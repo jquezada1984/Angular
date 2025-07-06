@@ -19,6 +19,7 @@ BEGIN
         Phone NVARCHAR(20) NOT NULL,
         City NVARCHAR(100) NOT NULL,
         PhotoUrl NVARCHAR(500) NULL,
+        PhotoBase64 NVARCHAR(MAX) NULL,
         CreatedAt DATETIME2 NOT NULL,
         UpdatedAt DATETIME2 NULL
     );

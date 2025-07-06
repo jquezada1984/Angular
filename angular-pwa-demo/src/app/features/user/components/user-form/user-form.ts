@@ -1,9 +1,10 @@
 import { Component, OnInit, OnChanges, Input, Output, EventEmitter, SimpleChanges, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { UserService } from '../../user.service';
 
 export interface User {
-  id: number;
+  id?: string;
   name: string;
   email: string;
   age: number;
@@ -39,7 +40,7 @@ export class UserFormComponent implements OnInit, OnChanges {
   selectedDeviceId: string | null = null;
   private stream: MediaStream | null = null;
 
-  constructor(private fb: FormBuilder) {}
+  constructor(private fb: FormBuilder, private userService: UserService) {}
 
   ngOnInit() {
     this.initForm();
@@ -48,12 +49,14 @@ export class UserFormComponent implements OnInit, OnChanges {
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes['user']) {
+      console.log('Usuario recibido en formulario:', this.user);
       if (this.user) {
         this.isEditing = true;
         setTimeout(() => {
           if (this.userForm && this.user) {
             this.userForm.patchValue(this.user);
             this.photoDataUrl = this.user.photo || null;
+            console.log('Foto asignada al formulario:', this.photoDataUrl);
           }
         });
       } else {
@@ -147,15 +150,56 @@ export class UserFormComponent implements OnInit, OnChanges {
     if (this.userForm.valid) {
       this.isSubmitting = true;
       const userData: User = {
-        id: this.user?.id || this.generateId(),
+        id: this.user?.id || undefined,
         ...this.userForm.value,
         photo: this.photoDataUrl || ''
       };
-      setTimeout(() => {
-        this.save.emit(userData);
-        this.isSubmitting = false;
-        this.closeForm();
-      }, 1000);
+      
+      if (this.isEditing && userData.id) {
+        // Actualizar usuario
+        this.userService.updateUser(userData.id, userData).subscribe({
+          next: (updatedUser) => {
+            // Si hay una nueva foto, actualizarla por separado
+            if (this.photoDataUrl && this.photoDataUrl.startsWith('data:image')) {
+              this.userService.updateUserPhoto(userData.id!, this.photoDataUrl).subscribe({
+                next: (userWithPhoto) => {
+                  this.save.emit(userWithPhoto);
+                  this.isSubmitting = false;
+                  this.closeForm();
+                },
+                error: (photoErr) => {
+                  console.error('Error al actualizar foto:', photoErr);
+                  // Guardar usuario sin foto si falla la actualización de foto
+                  this.save.emit(updatedUser);
+                  this.isSubmitting = false;
+                  this.closeForm();
+                }
+              });
+            } else {
+              this.save.emit(updatedUser);
+              this.isSubmitting = false;
+              this.closeForm();
+            }
+          },
+          error: (err) => {
+            alert('Error al actualizar el usuario');
+            this.isSubmitting = false;
+          }
+        });
+      } else {
+        // Crear nuevo usuario
+        this.userService.createUser(userData).subscribe({
+          next: (createdUser) => {
+            this.save.emit(createdUser);
+            this.isSubmitting = false;
+            this.closeForm();
+          },
+          error: (err) => {
+            alert('Error al crear el usuario');
+            this.isSubmitting = false;
+          }
+        });
+      }
     } else {
       this.markFormGroupTouched();
     }

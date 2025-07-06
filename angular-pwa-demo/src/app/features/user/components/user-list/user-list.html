@@ -23,9 +23,15 @@
         <tr *ngFor="let user of users; trackBy: trackByUserId">
           <td>
             <div class="datagrid-user-info">
-              <div class="datagrid-avatar">
+              <div class="datagrid-avatar" *ngIf="!user.photo">
                 {{ user.name.charAt(0).toUpperCase() }}
               </div>
+              <img 
+                *ngIf="user.photo" 
+                [src]="user.photo.startsWith('data:') ? user.photo : (environment.baseApiUrl + user.photo)" 
+                [alt]="user.name"
+                class="datagrid-user-photo"
+                (error)="onImageError($event)">
               <div>
                 <div class="datagrid-user-name">{{ user.name }}</div>
                 <div class="datagrid-user-email">{{ user.email }}</div>
@@ -40,7 +46,7 @@
               <button class="datagrid-action-btn datagrid-edit-btn" (click)="editUser(user)">
                 ✏️ Editar
               </button>
-              <button class="datagrid-action-btn datagrid-delete-btn" (click)="deleteUser(user.id)">
+              <button *ngIf="user.id !== undefined" class="datagrid-action-btn datagrid-delete-btn" (click)="deleteUser(user.id)">
                 🗑️ Eliminar
               </button>
             </div>

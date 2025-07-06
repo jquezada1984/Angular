@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { NavBarComponent } from '../../../../shared/components/nav-bar/nav-bar';
 import { UserFormComponent, User } from '../user-form/user-form';
+import { UserService } from '../../user.service';
+import { environment } from '../../../../../environments/environment';
 
 @Component({
   selector: 'app-user-list',
@@ -14,35 +16,19 @@ export class UserListComponent implements OnInit {
   users: User[] = [];
   showForm = false;
   selectedUser: User | null = null;
+  environment = environment;
+
+  constructor(private userService: UserService) {}
 
   ngOnInit() {
-    // Datos de ejemplo
-    this.users = [
-      {
-        id: 1,
-        name: 'Juan Pérez',
-        email: 'juan.perez@email.com',
-        age: 28,
-        phone: '+34 123 456 789',
-        city: 'Madrid'
+    this.userService.getUsers().subscribe({
+      next: (users) => {
+        this.users = users;
       },
-      {
-        id: 2,
-        name: 'María García',
-        email: 'maria.garcia@email.com',
-        age: 32,
-        phone: '+34 987 654 321',
-        city: 'Barcelona'
-      },
-      {
-        id: 3,
-        name: 'Carlos López',
-        email: 'carlos.lopez@email.com',
-        age: 25,
-        phone: '+34 555 123 456',
-        city: 'Valencia'
+      error: (err) => {
+        alert('Error al obtener los usuarios');
       }
-    ];
+    });
   }
 
   addUser() {
@@ -51,11 +37,24 @@ export class UserListComponent implements OnInit {
   }
 
   editUser(user: User) {
-    this.selectedUser = { ...user };
-    this.showForm = true;
+    console.log('Editando usuario:', user);
+    // Obtener el usuario con la imagen convertida a Data URL
+    this.userService.getUserByIdWithPhoto(user.id!).subscribe({
+      next: (userWithPhoto) => {
+        console.log('Usuario con foto obtenido para editar:', userWithPhoto);
+        this.selectedUser = userWithPhoto;
+        this.showForm = true;
+      },
+      error: (err) => {
+        console.error('Error al obtener usuario con foto:', err);
+        // Fallback: usar el usuario sin foto
+        this.selectedUser = { ...user };
+        this.showForm = true;
+      }
+    });
   }
 
-  deleteUser(userId: number) {
+  deleteUser(userId: string) {
     if (confirm('¿Estás seguro de que quieres eliminar este usuario?')) {
       this.users = this.users.filter(user => user.id !== userId);
     }
@@ -66,7 +65,8 @@ export class UserListComponent implements OnInit {
       // Editar usuario existente
       const index = this.users.findIndex(u => u.id === user.id);
       if (index !== -1) {
-        this.users[index] = user;
+        // Actualizar con la URL de la imagen del backend
+        this.users[index] = { ...user, photo: user.photo };
       }
     } else {
       // Agregar nuevo usuario
@@ -79,7 +79,17 @@ export class UserListComponent implements OnInit {
     this.selectedUser = null;
   }
 
-  trackByUserId(index: number, user: User): number {
-    return user.id;
+  trackByUserId(index: number, user: User): string {
+    return user.id!;
+  }
+
+  onImageError(event: Event) {
+    const img = event.target as HTMLImageElement;
+    img.style.display = 'none';
+    // Mostrar avatar con inicial en su lugar
+    const avatar = img.parentElement?.querySelector('.datagrid-avatar') as HTMLElement;
+    if (avatar) {
+      avatar.style.display = 'block';
+    }
   }
 } 

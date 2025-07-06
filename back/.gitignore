@@ -666,4 +666,12 @@ appsettings.Development.json
 appsettings.Production.json
 appsettings.Staging.json
 !appsettings.json
-!appsettings.Example.json 
+!appsettings.Example.json
+
+# Image files - ignore uploaded images but keep folder structure
+src/API/img/usuario/*.jpg
+src/API/img/usuario/*.jpeg
+src/API/img/usuario/*.png
+src/API/img/usuario/*.gif
+src/API/img/usuario/*.bmp
+src/API/img/usuario/*.webp 

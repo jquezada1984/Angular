@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Http.Features;
+
 namespace Application.DTOs;
 
 public record UserDto(
@@ -18,7 +20,9 @@ public record CreateUserDto(
     int Age,
     string Phone,
     string City,
-    string? PhotoUrl
+    Stream? PhotoStream,
+    string? PhotoFileName,
+    string? PhotoContentType
 );
 
 public record UpdateUserDto(
@@ -30,5 +34,7 @@ public record UpdateUserDto(
 );
 
 public record UpdateUserPhotoDto(
-    string PhotoUrl
+    Stream PhotoStream,
+    string PhotoFileName,
+    string PhotoContentType
 ); 

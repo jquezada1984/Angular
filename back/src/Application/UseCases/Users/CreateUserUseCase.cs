@@ -1,4 +1,5 @@
 using Application.DTOs;
+using Application.Services;
 using Domain.Entities;
 using Domain.Repositories;
 
@@ -7,10 +8,12 @@ namespace Application.UseCases.Users;
 public class CreateUserUseCase : ICreateUserUseCase
 {
     private readonly IUserRepository _userRepository;
+    private readonly IFileService _fileService;
 
-    public CreateUserUseCase(IUserRepository userRepository)
+    public CreateUserUseCase(IUserRepository userRepository, IFileService fileService)
     {
         _userRepository = userRepository;
+        _fileService = fileService;
     }
 
     public async Task<UserDto> ExecuteAsync(CreateUserDto createUserDto)
@@ -21,13 +24,25 @@ public class CreateUserUseCase : ICreateUserUseCase
             throw new InvalidOperationException($"Ya existe un usuario con el email: {createUserDto.Email}");
         }
 
+        string? photoUrl = null;
+        
+        // Procesar imagen si se proporciona
+        if (createUserDto.PhotoStream != null && !string.IsNullOrEmpty(createUserDto.PhotoFileName))
+        {
+            photoUrl = await _fileService.SaveImageAsync(
+                createUserDto.PhotoStream, 
+                createUserDto.PhotoFileName, 
+                "usuario"
+            );
+        }
+
         var user = new User(
             createUserDto.Name,
             createUserDto.Email,
             createUserDto.Age,
             createUserDto.Phone,
             createUserDto.City,
-            createUserDto.PhotoUrl
+            photoUrl
         );
 
         var createdUser = await _userRepository.AddAsync(user);

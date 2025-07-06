@@ -1,8 +1,24 @@
 using Application.DTOs;
 using Application.UseCases.Users;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers;
+
+public class CreateUserFormDto
+{
+    public string Name { get; set; }
+    public string Email { get; set; }
+    public int Age { get; set; }
+    public string Phone { get; set; }
+    public string City { get; set; }
+    public IFormFile? PhotoFile { get; set; }
+}
+
+public class UpdateUserPhotoFormDto
+{
+    public IFormFile PhotoFile { get; set; }
+}
 
 public class UsersController : BaseController
 {
@@ -55,10 +71,21 @@ public class UsersController : BaseController
     }
 
     [HttpPost]
-    public async Task<ActionResult<UserDto>> Create(CreateUserDto createUserDto)
+    public async Task<ActionResult<UserDto>> Create([FromForm] CreateUserFormDto dto)
     {
         try
         {
+            var createUserDto = new CreateUserDto(
+                dto.Name,
+                dto.Email,
+                dto.Age,
+                dto.Phone,
+                dto.City,
+                dto.PhotoFile?.OpenReadStream(),
+                dto.PhotoFile?.FileName,
+                dto.PhotoFile?.ContentType
+            );
+
             var user = await _createUserUseCase.ExecuteAsync(createUserDto);
             return CreatedAtAction(nameof(GetById), new { id = user.Id }, user);
         }
@@ -91,10 +118,16 @@ public class UsersController : BaseController
     }
 
     [HttpPut("{id:guid}/photo")]
-    public async Task<ActionResult<UserDto>> UpdatePhoto(Guid id, UpdateUserPhotoDto updateUserPhotoDto)
+    public async Task<ActionResult<UserDto>> UpdatePhoto(Guid id, [FromForm] UpdateUserPhotoFormDto dto)
     {
         try
         {
+            var updateUserPhotoDto = new UpdateUserPhotoDto(
+                dto.PhotoFile.OpenReadStream(),
+                dto.PhotoFile.FileName,
+                dto.PhotoFile.ContentType
+            );
+
             var user = await _updateUserPhotoUseCase.ExecuteAsync(id, updateUserPhotoDto);
             return HandleResult(user);
         }

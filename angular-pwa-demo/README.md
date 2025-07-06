@@ -302,3 +302,53 @@ Este proyecto está bajo la Licencia MIT - ver el archivo [LICENSE.md](LICENSE.m
 
 **John Quezada** - [@jquezada1984](https://github.com/jquezada1984)
 
+## 🎯 **Problema Solucionado**
+
+### ❌ **Error Original**
+- **Error 415**: "Unsupported Media Type"
+- **Causa**: Enviando `FormData` a un endpoint que espera `JSON`
+
+### ✅ **Solución Implementada**
+
+#### **1. Separación de Responsabilidades**
+- **Crear usuario**: `FormData` (incluye foto)
+- **Actualizar datos**: `JSON` (solo datos de texto)
+- **Actualizar foto**: `FormData` (solo foto)
+
+#### **2. Flujo de Actualización Mejorado**
+```typescript
+<code_block_to_apply_changes_from>
+```
+
+#### **3. Manejo de Errores**
+- Si falla la actualización de foto, se guarda el usuario sin foto
+- Logs de error para debugging
+- Fallback graceful
+
+## 🚀 **Para Probar la Solución**
+
+1. **Ejecutar los proyectos**:
+   ```bash
+   start-projects.bat
+   ```
+
+2. **Probar el flujo completo**:
+   - Crear usuario con foto ✅
+   - Editar datos de texto ✅
+   - Editar foto ✅
+   - Verificar que las imágenes se muestren ✅
+
+3. **Verificar en Swagger**:
+   - Abrir: `https://localhost:7000/swagger`
+   - Probar los endpoints manualmente
+
+## 📋 **Endpoints Corregidos**
+
+| Acción | Método | Content-Type | Datos |
+|--------|--------|--------------|-------|
+| Crear | POST | multipart/form-data | FormData con foto |
+| Actualizar datos | PUT | application/json | JSON sin foto |
+| Actualizar foto | PUT | multipart/form-data | FormData solo foto |
+
+¿Te gustaría que probemos la funcionalidad o hay algún otro aspecto que necesites ajustar?
+
