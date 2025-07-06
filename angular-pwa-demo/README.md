@@ -1,31 +1,53 @@
-# Administracion de usuarios
+# Angular PWA Demo - Gestión de Usuarios y Productos
 
-Una aplicación web progresiva (PWA) desarrollada con Angular que incluye módulos con lazy-loading, formularios con funcionalidad de cámara, y configuración completa de PWA.
+Una aplicación web progresiva (PWA) desarrollada con **Angular 17** que incluye gestión completa de usuarios y productos, con funcionalidad de cámara, formularios modales, y un sistema de estilos compartido unificado.
 
-## 🚀 Características
+## 🚀 Características Principales
 
-### Módulos y Lazy-Loading
-- **UserModule**: Gestión de usuarios con formulario y funcionalidad de cámara
-- **ProductModule**: Gestión de productos con formulario completo
-- **SharedModule**: Componentes, directivas y pipes reutilizables
-- **PreloadAllModules**: Estrategia de precarga para mejor rendimiento
+### 📱 **PWA (Progressive Web App)**
+- ✅ Service Worker configurado para cache offline
+- ✅ Manifest para instalación en dispositivos
+- ✅ Iconos en múltiples tamaños
+- ✅ Estrategia de cache optimizada
+- ✅ Funciona offline
 
-### Formulario de Usuario
-- Campos: `firstName`, `lastName`
-- Selector de cámara (frontal/trasera)
-- Vista previa y captura de imagen usando MediaDevices API
-- Almacenamiento de foto en el formulario
+### 🏗️ **Arquitectura Modular**
+- ✅ **Módulos Standalone** con lazy-loading
+- ✅ **UserModule**: Gestión completa de usuarios
+- ✅ **ProductModule**: Gestión completa de productos
+- ✅ **SharedModule**: Componentes reutilizables
+- ✅ **PreloadAllModules**: Estrategia de precarga
 
-### Formulario de Producto
-- Campos: `name`, `price`, `description`, `category`, `stock`, `image`
-- Vista previa de descripción y imagen
-- Formateo de precios con pipes personalizados
+### 👥 **Gestión de Usuarios**
+- ✅ **Lista de usuarios** con DataGrid responsive
+- ✅ **Formulario modal** para crear/editar usuarios
+- ✅ **Campos**: nombre, email, edad, teléfono, ciudad
+- ✅ **Funcionalidad de cámara** integrada
+- ✅ **Captura de fotos** con selector de cámara (frontal/trasera)
+- ✅ **Previsualización** de imágenes capturadas
+- ✅ **Validaciones** completas de formularios
 
-### PWA (Progressive Web App)
-- Service Worker configurado
-- Manifest para instalación
-- Cache de assets y API
-- Estrategia de cache: freshness con timeout de 5s
+### 📦 **Gestión de Productos**
+- ✅ **Lista de productos** con DataGrid responsive
+- ✅ **Formulario modal** para crear/editar productos
+- ✅ **Campos**: nombre, descripción, precio, stock, categoría, código
+- ✅ **Validaciones** completas de formularios
+- ✅ **Formateo de precios** con pipes personalizados
+
+### 🎨 **Sistema de Estilos Unificado**
+- ✅ **Archivo de estilos compartido** (`shared-styles.scss`)
+- ✅ **Sistema de variables CSS** con colores unificados
+- ✅ **Diseño responsive** para móviles y desktop
+- ✅ **Modales centrados** con animaciones suaves
+- ✅ **Consistencia visual** en toda la aplicación
+
+### 📷 **Funcionalidad de Cámara**
+- ✅ **Acceso a cámara** del dispositivo (PC/móvil)
+- ✅ **Selector de cámara** (frontal/trasera si hay múltiples)
+- ✅ **Captura de fotos** en tiempo real
+- ✅ **Previsualización** de imagen capturada
+- ✅ **Eliminación** de fotos
+- ✅ **Integración** con formulario de usuario
 
 ## 📦 Instalación
 
@@ -42,10 +64,13 @@ npm install
 
 ```bash
 # Servidor de desarrollo
-ng serve
+npm start
 
 # Servidor de desarrollo con apertura automática
 ng serve --open
+
+# Servidor de desarrollo con live-reload
+ng serve --poll=2000
 
 # Servidor de desarrollo con SSL (para PWA)
 ng serve --ssl
@@ -101,41 +126,113 @@ npx lighthouse http://localhost:8080 --view
 ## 🏗️ Estructura del Proyecto
 
 ```
-src/
-├── app/
-│   ├── features/
-│   │   ├── user/
+angular-pwa-demo/
+├── src/
+│   ├── app/
+│   │   ├── features/
+│   │   │   ├── user/
+│   │   │   │   └── components/
+│   │   │   │       ├── user-form/
+│   │   │   │       │   ├── user-form.ts
+│   │   │   │       │   ├── user-form.html
+│   │   │   │       │   └── user-form.css
+│   │   │   │       └── user-list/
+│   │   │   │           ├── user-list.ts
+│   │   │   │           └── user-list.html
+│   │   │   └── product/
+│   │   │       └── components/
+│   │   │           ├── product-form/
+│   │   │           │   ├── product-form.ts
+│   │   │           │   ├── product-form.html
+│   │   │           │   └── product-form.css
+│   │   │           └── product-list/
+│   │   │               ├── product-list.ts
+│   │   │               └── product-list.html
+│   │   ├── shared/
 │   │   │   ├── components/
-│   │   │   │   ├── user-form/
-│   │   │   │   └── user-list/
-│   │   │   └── user.module.ts
-│   │   └── product/
-│   │       ├── components/
-│   │       │   ├── product-form/
-│   │       │   └── product-list/
-│   │       └── product.module.ts
-│   ├── shared/
-│   │   ├── components/
-│   │   │   ├── alert/
-│   │   │   ├── button/
-│   │   │   └── loading-spinner/
-│   │   ├── directives/
-│   │   │   ├── click-outside/
-│   │   │   ├── highlight/
-│   │   │   └── tooltip/
-│   │   ├── pipes/
-│   │   │   ├── currency-format/
-│   │   │   ├── format-date/
-│   │   │   └── truncate/
-│   │   └── shared-module.ts
-│   ├── app.routes.ts
-│   ├── app.config.ts
-│   └── app.ts
-├── public/
-│   ├── manifest.webmanifest
-│   └── icons/
-└── ngsw-config.json
+│   │   │   │   ├── alert/
+│   │   │   │   ├── button/
+│   │   │   │   ├── loading-spinner/
+│   │   │   │   └── nav-bar/
+│   │   │   ├── directives/
+│   │   │   │   ├── click-outside/
+│   │   │   │   ├── highlight/
+│   │   │   │   └── tooltip/
+│   │   │   ├── pipes/
+│   │   │   │   ├── currency-format/
+│   │   │   │   ├── format-date/
+│   │   │   │   └── truncate/
+│   │   │   └── styles/
+│   │   │       ├── shared-styles.scss
+│   │   │       └── list-styles.css
+│   │   ├── app.routes.ts
+│   │   ├── app.config.ts
+│   │   └── app.ts
+│   ├── public/
+│   │   ├── manifest.webmanifest
+│   │   └── icons/
+│   │       ├── icon-72x72.png
+│   │       ├── icon-96x96.png
+│   │       ├── icon-128x128.png
+│   │       ├── icon-144x144.png
+│   │       ├── icon-152x152.png
+│   │       ├── icon-192x192.png
+│   │       ├── icon-384x384.png
+│   │       └── icon-512x512.png
+│   ├── styles.scss
+│   └── main.ts
+├── ngsw-config.json
+├── angular.json
+├── package.json
+└── README.md
 ```
+
+## 🎨 Sistema de Estilos
+
+### Variables CSS Principales
+```scss
+:root {
+  // Colores principales
+  --primary-color: #667eea;
+  --secondary-color: #764ba2;
+  --primary-gradient: linear-gradient(135deg, #667eea, #764ba2);
+  
+  // Estados
+  --success-color: #28a745;
+  --danger-color: #dc3545;
+  --info-color: #17a2b8;
+  
+  // Espaciado
+  --spacing-xs: 0.25rem;
+  --spacing-sm: 0.5rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+  --spacing-xl: 2rem;
+}
+```
+
+### Clases Principales
+- `.list-container` - Contenedor de listas
+- `.datagrid-container` - Contenedor de tablas
+- `.modal-form-container` - Modal de formularios
+- `.form-input`, `.form-label` - Elementos de formulario
+- `.btn`, `.btn-primary`, `.btn-secondary` - Botones
+
+## 📷 Funcionalidad de Cámara
+
+### Características
+- **MediaDevices API** para acceso a cámara
+- **Selector de dispositivo** (frontal/trasera)
+- **Captura en tiempo real** con Canvas API
+- **Previsualización** de imagen capturada
+- **Almacenamiento** como Data URL
+
+### Uso
+1. Hacer clic en "Tomar foto" en el formulario de usuario
+2. Seleccionar cámara si hay múltiples dispositivos
+3. Capturar foto con el botón "Capturar foto"
+4. La imagen se muestra en el formulario
+5. Opción de eliminar y volver a tomar
 
 ## 🔧 Configuración
 
@@ -205,108 +302,55 @@ vercel --prod
 # Instalar Firebase CLI
 npm install -g firebase-tools
 
-# Login
+# Login y deploy
 firebase login
-
-# Inicializar proyecto
 firebase init hosting
-
-# Build y deploy
-ng build --configuration production
 firebase deploy
 ```
-
-### GitHub Pages
-```bash
-# Instalar angular-cli-ghpages
-npm install -g angular-cli-ghpages
-
-# Build y deploy
-ng build --configuration production --base-href "https://tu-usuario.github.io/angular-pwa-demo/"
-npx angular-cli-ghpages --dir=dist/angular-pwa-demo
-```
-
-## 📊 Performance
-
-### Lighthouse Score Objetivo
-- **Performance**: 90+
-- **Accessibility**: 90+
-- **Best Practices**: 90+
-- **SEO**: 90+
-- **PWA**: 90+
-
-### Optimizaciones Incluidas
-- Lazy-loading de módulos
-- PreloadAllModules para mejor UX
-- Service Worker para cache
-- Compresión de imágenes
-- Minificación de CSS/JS
-- Tree shaking
 
 ## 🧪 Testing
 
 ```bash
-# Unit tests
-ng test
+# Ejecutar tests unitarios
+npm test
 
-# E2E tests
-ng e2e
+# Ejecutar tests con coverage
+npm run test:coverage
 
-# Coverage
-ng test --code-coverage
+# Ejecutar tests e2e
+npm run e2e
 ```
 
-## 📝 Scripts NPM
+## 📋 Roadmap
 
-```json
-{
-  "scripts": {
-    "ng": "ng",
-    "start": "ng serve",
-    "build": "ng build",
-    "build:prod": "ng build --configuration production",
-    "watch": "ng build --watch --configuration development",
-    "test": "ng test",
-    "test:coverage": "ng test --code-coverage",
-    "e2e": "ng e2e",
-    "lint": "ng lint",
-    "analyze": "ng build --configuration production --stats-json && npx webpack-bundle-analyzer dist/angular-pwa-demo/stats.json"
-  }
-}
-```
+### Próximas Funcionalidades
+- [ ] **Autenticación** con JWT
+- [ ] **Backend API** con Node.js/Express
+- [ ] **Base de datos** MongoDB/PostgreSQL
+- [ ] **Filtros y búsqueda** en listas
+- [ ] **Exportación** a PDF/Excel
+- [ ] **Notificaciones push** para PWA
+- [ ] **Tema oscuro/claro**
+- [ ] **Internacionalización** (i18n)
 
-## 🔍 Troubleshooting
+## 🤝 Contribuir
 
-### Errores Comunes
-
-1. **Service Worker no se registra**
-   - Verificar que esté en HTTPS o localhost
-   - Revisar la configuración en app.config.ts
-
-2. **Lazy-loading no funciona**
-   - Verificar las rutas en app.routes.ts
-   - Comprobar que los módulos exporten correctamente
-
-3. **Cámara no funciona**
-   - Verificar permisos del navegador
-   - Asegurar que esté en HTTPS
-
-4. **Build falla**
-   - Limpiar cache: `npm run clean`
-   - Reinstalar node_modules: `rm -rf node_modules && npm install`
+1. Fork el proyecto
+2. Crear una rama para tu feature (`git checkout -b feature/AmazingFeature`)
+3. Commit tus cambios (`git commit -m 'Add some AmazingFeature'`)
+4. Push a la rama (`git push origin feature/AmazingFeature`)
+5. Abrir un Pull Request
 
 ## 📄 Licencia
 
-Este proyecto está bajo la Licencia MIT. Ver el archivo `LICENSE` para más detalles.
+Este proyecto está bajo la Licencia MIT - ver el archivo [LICENSE.md](LICENSE.md) para detalles.
 
-## 🤝 Contribución
+## 👨‍💻 Autor
 
-1. Fork el proyecto
-2. Crea una rama para tu feature (`git checkout -b feature/AmazingFeature`)
-3. Commit tus cambios (`git commit -m 'Add some AmazingFeature'`)
-4. Push a la rama (`git push origin feature/AmazingFeature`)
-5. Abre un Pull Request
+**Tu Nombre** - [@tu-usuario](https://github.com/tu-usuario)
 
-## 📞 Soporte
+## 🙏 Agradecimientos
 
-Para soporte, email: soporte@ejemplo.com o crear un issue en el repositorio.
+- Angular Team por el framework
+- Angular CLI por las herramientas de desarrollo
+- Comunidad Angular por el soporte
