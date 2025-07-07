@@ -27,15 +27,21 @@ builder.Services.AddSwaggerGen();
 
 // CORS configuration
 var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>() ?? new[] { "http://localhost:4200" };
+Console.WriteLine("AllowedOrigins: " + string.Join(", ", allowedOrigins));
 
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAngularApp", policy =>
     {
-        policy.WithOrigins(allowedOrigins)
+        // SOLO PARA PRUEBAS: Permitir cualquier origen
+        policy.AllowAnyOrigin()
               .AllowAnyHeader()
-              .AllowAnyMethod()
-              .AllowCredentials();
+              .AllowAnyMethod();
+        // Si quieres volver a restringir, comenta las líneas de arriba y descomenta las de abajo:
+        // policy.WithOrigins(allowedOrigins)
+        //       .AllowAnyHeader()
+        //       .AllowAnyMethod()
+        //       .AllowCredentials();
     });
 });
 
@@ -82,8 +88,19 @@ app.UseStaticFiles(new StaticFileOptions
     RequestPath = "/img",
     OnPrepareResponse = ctx =>
     {
-        ctx.Context.Response.Headers.Append("Access-Control-Allow-Origin", "http://localhost:4200");
-        ctx.Context.Response.Headers.Append("Access-Control-Allow-Credentials", "true");
+        var origin = ctx.Context.Request.Headers["Origin"].ToString();
+        var allowedOrigins = new[] {
+            "http://localhost:4200",
+            "https://localhost:4200",
+            "http://192.168.100.3:4200",
+            "https://192.168.100.3:4200",
+            "https://c888-2800-bf0-8027-1311-2021-64b1-441c-576b.ngrok-free.app"
+        };
+        if (allowedOrigins.Contains(origin))
+        {
+            ctx.Context.Response.Headers.Append("Access-Control-Allow-Origin", origin);
+            ctx.Context.Response.Headers.Append("Access-Control-Allow-Credentials", "true");
+        }
     }
 });
 

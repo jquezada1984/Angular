@@ -1,8 +1,4 @@
-import { Routes } from '@angular/router';
-import { UserListComponent } from './features/user/components/user-list/user-list';
-import { UserFormComponent } from './features/user/components/user-form/user-form';
-import { ProductListComponent } from './features/product/components/product-list/product-list';
-import { ProductFormComponent } from './features/product/components/product-form/product-form';
+import { Routes, PreloadAllModules } from '@angular/router';
 
 export const routes: Routes = [
   {
@@ -12,30 +8,18 @@ export const routes: Routes = [
   },
   {
     path: 'users',
-    component: UserListComponent
-  },
-  {
-    path: 'users/new',
-    component: UserFormComponent
-  },
-  {
-    path: 'users/edit/:id',
-    component: UserFormComponent
+    loadChildren: () => import('./features/user/user.module').then(m => m.UserModule)
   },
   {
     path: 'products',
-    component: ProductListComponent
-  },
-  {
-    path: 'products/new',
-    component: ProductFormComponent
-  },
-  {
-    path: 'products/edit/:id',
-    component: ProductFormComponent
+    loadChildren: () => import('./features/product/product.module').then(m => m.ProductModule)
   },
   {
     path: '**',
     redirectTo: '/users'
   }
 ];
+
+export const appRouterConfig = {
+  preloadingStrategy: PreloadAllModules
+};
